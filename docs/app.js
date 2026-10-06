@@ -121,8 +121,9 @@ function guessRoles(header, rows) {
     const vals = sample.map((r) => r[i]).filter((v) => v != null && v !== '');
     const numeric = vals.length > 0 && vals.every(isNum);
     const uniq = new Set(vals).size;
-    if (/(^|_|\s)(id|hash|txid|order|trade ?id|uuid)($|_|\s)|remark|note|memo|description/i.test(c)) roles[c] = 'last';
-    else if (/price|rate|avg/i.test(c)) roles[c] = 'last';
+    if (/(^|_|\s)(u?id|hash|txid|order ?id|trade ?id|uuid)($|_|\s|\()|remark|note|memo|description/i.test(c)) roles[c] = 'last';
+    else if (/price|rate|avg/i.test(c) && numeric) roles[c] = 'avg';
+    else if (/time|date/i.test(c)) roles[c] = 'last';
     else if (numeric) roles[c] = 'sum';
     else if (uniq > Math.max(30, sample.length * 0.5)) roles[c] = 'last';
     else roles[c] = 'key';
@@ -153,6 +154,7 @@ function loadFile(name, text) {
   $('cols').innerHTML = '<tr><th>Column</th><th>Example</th><th>Role</th></tr>' + header.map((c, i) => `<tr><td>${c}</td><td>${(rows[0][i] || '').slice(0, 40)}</td><td><select data-col="${c}">
     <option value="key" ${roles[c] === 'key' ? 'selected' : ''}>keep apart</option>
     <option value="sum" ${roles[c] === 'sum' ? 'selected' : ''}>sum</option>
+    <option value="avg" ${roles[c] === 'avg' ? 'selected' : ''}>average</option>
     <option value="last" ${roles[c] === 'last' ? 'selected' : ''}>last value</option></select></td></tr>`).join('');
   $('setup').hidden = false; $('out').hidden = true;
   $('status').textContent = '';
@@ -172,7 +174,8 @@ function squeeze() {
   let re = null;
   try { re = fre ? new RegExp(fre, 'i') : null; } catch (e) { $('status').innerHTML = '<span class="err">The filter is not a valid regular expression.</span>'; return; }
   const keyI = header.map((c, i) => (roles[c] === 'key' && i !== dateI ? i : -1)).filter((i) => i >= 0);
-  const sumI = header.map((c, i) => (roles[c] === 'sum' && i !== dateI ? i : -1)).filter((i) => i >= 0);
+  const sumI = header.map((c, i) => ((roles[c] === 'sum' || roles[c] === 'avg') && i !== dateI ? i : -1)).filter((i) => i >= 0);
+  const isAvg = sumI.map((i) => roles[header[i]] === 'avg');
 
   const out = []; const groups = new Map(); let badDates = 0, merged = 0;
   rows.forEach((r, n) => {
@@ -192,7 +195,10 @@ function squeeze() {
   const result = out.map((o) => {
     if (!o.cnt) return o.row;
     const row = o.row.slice();
-    sumI.forEach((i, j) => { if (o.numeric[j] && (o.sums[j] !== 0n || (row[i] || '').trim() !== '')) row[i] = fromBig(o.sums[j]); });
+    sumI.forEach((i, j) => {
+      if (!o.numeric[j] || (o.sums[j] === 0n && (row[i] || '').trim() === '')) return;
+      row[i] = isAvg[j] ? fromBig(o.sums[j] / BigInt(o.cnt)) : fromBig(o.sums[j]);
+    });
     if (o.cnt > 1) { merged += o.cnt - 1; p && p.onMerge && p.onMerge(row, idx, o.cnt); }
     return row;
   });

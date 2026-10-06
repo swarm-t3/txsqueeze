@@ -6,7 +6,7 @@
 <title>TxSqueeze — cut your Koinly transaction count (merge staking rewards and bot trades by day)</title>
 <meta name="description" content="Over your Koinly transaction limit because of daily staking rewards or trading-bot fills? TxSqueeze merges them into daily, weekly or monthly rows in your browser and keeps the file format Koinly already reads (Binance transaction history, Koinly universal CSV, or any CSV).">
 <meta property="og:title" content="TxSqueeze — cut your Koinly transaction count">
-<meta property="og:description" content="Merge daily staking rewards and bot fills into one row per day, week or month. Same file format, fewer transactions, cheaper plan. Runs in your browser.">
+<meta property="og:description" content="Merge trading-bot fills and daily rewards into one row per day, week or month. Same file format, fewer Koinly transactions, cheaper plan. Runs in your browser.">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -19,8 +19,8 @@
 
 <main class="wrap">
 <section class="hero">
-  <h1>Over your Koinly transaction limit? Squeeze the CSV, not your wallet.</h1>
-  <p class="lead">Koinly bills by transaction count, and every daily staking reward, Simple Earn interest payment and grid-bot fill counts as one. Koinly's own support suggests the fix: <i>"tally up all the rewards received on a certain day/week/month and add a single deposit for the whole amount"</i>. TxSqueeze does that for a whole file in seconds, and keeps the original format so Koinly's importer still reads it.</p>
+  <h1>Trading bots and daily rewards blowing up your Koinly transaction count? Squeeze the CSV.</h1>
+  <p class="lead">Koinly bills by transaction count, and every grid-bot fill, daily staking reward and Simple Earn interest payment counts as one. Koinly can bulk-aggregate <i>deposits</i> per day inside the app, but it can't merge trades, withdrawals or fees in bulk, or roll up by week or month (the <a href="https://feedback.koinly.io/feature-requests/p/aggregate-trading-bot-transactions">bot-trade request</a> has been open since 2022). TxSqueeze merges them in the CSV before you import, the way Koinly support suggests (<i>"tally up ... on a certain day/week/month"</i>), and keeps the original format so Koinly's importer still reads it.</p>
   <p class="muted">Runs entirely in your browser. Your file is never uploaded anywhere.</p>
 
   <div class="drop" id="drop">
@@ -39,7 +39,7 @@
       <select id="period"><option value="day" selected>Per day</option><option value="week">Per week (Mon–Sun)</option><option value="month">Per month</option></select>
     </label>
   </div>
-  <p class="muted">Rows merge when they fall in the same period and have the same value in every <b>keep-apart</b> column. Numbers in <b>sum</b> columns are added. Other columns keep the last row's value.</p>
+  <p class="muted">Rows merge when they fall in the same period and have the same value in every <b>keep-apart</b> column. Numbers in <b>sum</b> columns are added, <b>average</b> columns (prices) are averaged, and other columns keep the last row's value.</p>
   <div class="scroll"><table class="t small" id="cols"></table></div>
   <div class="grid2">
     <label>Only merge rows where <select id="filterCol"><option value="">(all rows)</option></select></label>
