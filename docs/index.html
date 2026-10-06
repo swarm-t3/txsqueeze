@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TxSqueeze — cut your Koinly transaction count (merge staking rewards and bot trades by day)</title>
+<meta name="description" content="Over your Koinly transaction limit because of daily staking rewards or trading-bot fills? TxSqueeze merges them into daily, weekly or monthly rows in your browser and keeps the file format Koinly already reads (Binance transaction history, Koinly universal CSV, or any CSV).">
+<meta property="og:title" content="TxSqueeze — cut your Koinly transaction count">
+<meta property="og:description" content="Merge daily staking rewards and bot fills into one row per day, week or month. Same file format, fewer transactions, cheaper plan. Runs in your browser.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">Tx<span>Squeeze</span></div>
+    <nav><a href="#how">How it works</a> <a href="#pricing">Pricing</a> <a href="#faq">FAQ</a></nav>
+  </div>
+</header>
+
+<main class="wrap">
+<section class="hero">
+  <h1>Over your Koinly transaction limit? Squeeze the CSV, not your wallet.</h1>
+  <p class="lead">Koinly bills by transaction count, and every daily staking reward, Simple Earn interest payment and grid-bot fill counts as one. Koinly's own support suggests the fix: <i>"tally up all the rewards received on a certain day/week/month and add a single deposit for the whole amount"</i>. TxSqueeze does that for a whole file in seconds, and keeps the original format so Koinly's importer still reads it.</p>
+  <p class="muted">Runs entirely in your browser. Your file is never uploaded anywhere.</p>
+
+  <div class="drop" id="drop">
+    <input type="file" id="file" accept=".csv,text/csv">
+    <p>Drop a CSV here or <label for="file" class="link">choose a file</label></p>
+    <p class="muted">Works out of the box with <b>Binance transaction history</b> and <b>Koinly universal CSV</b>. Any other CSV: pick the columns.</p>
+  </div>
+  <div id="status"></div>
+</section>
+
+<section id="setup" hidden>
+  <h2>What to merge <small id="detected"></small></h2>
+  <div class="grid2">
+    <label>Date column <select id="dateCol"></select></label>
+    <label>Merge period
+      <select id="period"><option value="day" selected>Per day</option><option value="week">Per week (Mon–Sun)</option><option value="month">Per month</option></select>
+    </label>
+  </div>
+  <p class="muted">Rows merge when they fall in the same period and have the same value in every <b>keep-apart</b> column. Numbers in <b>sum</b> columns are added. Other columns keep the last row's value.</p>
+  <div class="scroll"><table class="t small" id="cols"></table></div>
+  <div class="grid2">
+    <label>Only merge rows where <select id="filterCol"><option value="">(all rows)</option></select></label>
+    <label>matches <input id="filterRe" placeholder="regex, e.g. interest|reward|staking"></label>
+  </div>
+  <p><button id="run" type="button">Squeeze</button></p>
+</section>
+
+<section id="out" hidden>
+  <h2>Result</h2>
+  <div id="result"></div>
+  <h3>Preview <small id="pvinfo"></small></h3>
+  <div class="scroll"><table class="t small" id="preview"></table></div>
+  <div class="dl">
+    <button id="dl" class="locked">Download squeezed CSV</button>
+  </div>
+
+  <div id="pay" class="pay">
+    <h3>Unlock the download: $19, one time</h3>
+    <p>Compare that with Koinly's extra-transaction pricing (about $10 per 1,000 above 10,000, or the jump from one plan to the next).</p>
+    <p>Send <b>19 USDT or 19 USDC</b> on <b>Arbitrum One</b> to:</p>
+    <p class="addr"><code id="payto">0x36c37d1b47737ba2b2a2cf1b5bc38509516b222f</code> <button id="copy" type="button">copy</button></p>
+    <p class="muted">Only Arbitrum One: USDT (0xFd08…Cbb9) or native USDC (0xaf88…5831). Binance, OKX, Bybit and most exchanges can withdraw USDT/USDC on the Arbitrum One network directly. Other chains or tokens cannot be credited.</p>
+    <p>Then paste the transaction hash. The page checks the transfer on-chain and unlocks downloads on this browser.</p>
+    <div class="row"><input id="tx" placeholder="0x… Arbitrum transaction hash" spellcheck="false"><button id="verify" type="button">Verify payment</button></div>
+    <details id="codebox"><summary>Have an unlock code?</summary><div class="row"><input id="code" placeholder="TS-XXXXXXXX" spellcheck="false"><button id="redeem" type="button">Redeem</button></div></details>
+    <div id="paystatus"></div>
+    <p class="muted">Small files are free: if your original file has 300 rows or fewer, the download is unlocked.</p>
+  </div>
+</section>
+
+<section id="how">
+  <h2>How it works</h2>
+  <ol>
+    <li><b>Binance transaction history</b> (UTC_Time, Account, Operation, Coin, Change): reward-type operations (Simple Earn interest, staking rewards, distributions, airdrops, Launchpool, cashback, commissions) are merged per period, account, operation and coin. Trades, deposits, withdrawals and subscriptions/redemptions are left exactly as they are, because Koinly pairs them by timestamp.</li>
+    <li><b>Koinly universal CSV</b>: rows merge when they share label, currencies and period. Unlabeled one-sided rows (transfers between your own wallets) are left alone so Koinly can still match them. TxHash is cleared on merged rows and the description says how many rows were merged.</li>
+    <li><b>Anything else</b> (KuCoin or Pionex bot fills, Bybit, OKX…): choose the date column, the columns that must match, and the number columns to add.</li>
+  </ol>
+  <p>The output keeps the original header and column order, so you import it into Koinly the same way you would the original file. Delete or replace the original import first, or you will double count.</p>
+</section>
+
+<section id="pricing">
+  <h2>Pricing</h2>
+  <div class="cards">
+    <div class="card"><h3>Free</h3><p class="price">$0</p><ul><li>Full preview and row counts</li><li>Download for files up to 300 rows</li></ul></div>
+    <div class="card hi"><h3>Unlock</h3><p class="price">$19</p><ul><li>Unlimited files on this browser</li><li>Day, week or month merging</li><li>Any CSV format</li></ul></div>
+  </div>
+</section>
+
+<section id="faq">
+  <h2>FAQ</h2>
+  <details><summary>Is merging rewards allowed for tax purposes?</summary><p>Koinly's support team recommends it on its own forum for exactly this problem (<a href="https://discuss.koinly.io/t/staking-rewards-create-too-many-transactions/15427">example</a>, <a href="https://discuss.koinly.io/t/you-have-exceeded-the-total-number-of-transactions-allowed-on-your-account/13294">example</a>). Daily merging keeps each day's income at that day's prices; weekly or monthly merging is coarser. Rules differ by country, and this is not tax advice. If in doubt, ask your accountant which period to use.</p></details>
+  <details><summary>Does my data leave my computer?</summary><p>No. The CSV is parsed and merged by JavaScript in this page. You can check the <a href="https://github.com/swarm-t3/txsqueeze">source</a> or disconnect from the internet after the page loads.</p></details>
+  <details><summary>Something looks wrong.</summary><p><a href="https://github.com/swarm-t3/txsqueeze/issues">Open an issue</a> or <a href="mailto:megafi.app1+txsqueeze@gmail.com">email us</a>. If a paid squeeze doesn't work for your file and we can't fix it, we refund.</p></details>
+</section>
+</main>
+<footer class="wrap muted">TxSqueeze is an independent tool, not affiliated with Koinly or any exchange. <a href="https://github.com/swarm-t3/txsqueeze">Source</a>. <a href="https://txsqueeze.goatcounter.com/">Public visitor stats</a>. Sister tool for Hyperliquid traders: <a href="https://swarm-t3.github.io/perpledger/">PerpLedger</a>.</footer>
+<script data-goatcounter="https://txsqueeze.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
