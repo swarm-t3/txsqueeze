@@ -7,7 +7,7 @@ const PAY_TOKENS = {
   '0xaf88d065e77c8cc2239327c5edb3a432268e5831': 'USDC',
 };
 const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
-const CODE_HASHES = []; // sha256 of unlock codes sold via Whop
+const CODE_HASHES = ['fbbce9fe069b54b0302cd2db1b6638809d6afc185764686659f5978c74857b39']; // sha256 of unlock codes sold via Whop
 const FREE_ROWS = 300; // files this small are free
 
 const $ = (id) => document.getElementById(id);

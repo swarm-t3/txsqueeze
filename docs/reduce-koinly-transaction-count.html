@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to reduce your Koinly transaction count (staking rewards, Earn interest, bot trades)</title>
+<meta name="description" content="Koinly says you've exceeded your transaction limit? Daily staking rewards, Binance Simple Earn interest and grid-bot fills are usually why. Here is how to merge them per day, week or month, the way Koinly support recommends, without breaking imports.">
+<link rel="canonical" href="https://swarm-t3.github.io/txsqueeze/reduce-koinly-transaction-count.html">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><div class="wrap"><a class="brand" href="./" style="text-decoration:none;color:inherit">Tx<span>Squeeze</span></a><nav><a href="./">Squeeze a CSV</a></nav></div></header>
+<main class="wrap">
+<h1>How to reduce your Koinly transaction count</h1>
+<p class="muted">Updated October 2026. Not tax advice.</p>
+<p>"You have exceeded the total number of transactions allowed on your account. Please reduce your transaction count or purchase a tax plan." If you have seen that banner, the cause is usually not trading. It is small, repetitive rows:</p>
+<ul>
+<li><b>Daily staking and Earn rewards.</b> Binance Simple Earn, Launchpool and staking pay one row per coin per day (or more). 10 coins for a year is 3,650 transactions.</li>
+<li><b>Trading bots.</b> Grid and DCA bots on KuCoin, Pionex or Binance split every order into many fills. One forum user found <i>73,000</i> micro-transactions from small bot experiments.</li>
+<li><b>Fees and dust</b> booked as separate rows.</li>
+</ul>
+<p>Koinly bills by transaction count (about 100 / 1,000 / 3,000 / 10,000 for its four plans, then roughly $10 per extra 1,000), so these rows decide which plan you need.</p>
+
+<h2>What Koinly support recommends</h2>
+<p>On Koinly's own forum, support staff give the same two options every time (<a href="https://discuss.koinly.io/t/staking-rewards-create-too-many-transactions/15427">1</a>, <a href="https://discuss.koinly.io/t/you-have-exceeded-the-total-number-of-transactions-allowed-on-your-account/13294">2</a>):</p>
+<ol>
+<li><b>Merge in the app</b>: select up to 9 same-day transactions with the same label and merge them. Repeat. Fine for a handful of days; painful for a year.</li>
+<li><b>Sum them in the CSV</b>: "tally up all the rewards received on a certain day/week/month and add a single deposit for the whole amount", then import via CSV instead of API so you control the rows.</li>
+</ol>
+
+<h2>Doing option 2 without a spreadsheet marathon</h2>
+<ol>
+<li>Download the CSV from the exchange (for Binance: <i>Orders → Transaction History → Generate all statements</i>).</li>
+<li>Open <a href="./">TxSqueeze</a> and drop the file in. Binance transaction history and Koinly universal CSV are detected automatically. For Binance it merges only reward-type operations (interest, staking rewards, distributions, airdrops, Launchpool, cashback, commissions) per day, account, operation and coin. Trades, deposits, withdrawals and Earn subscriptions/redemptions stay exactly as they were, because Koinly pairs them by timestamp.</li>
+<li>Pick day (closest to the original), week or month.</li>
+<li>Download the squeezed file. It has the same columns as the original.</li>
+<li>In Koinly, remove the API connection or the original file for that wallet first (otherwise you double count), then import the squeezed file the same way you would the original.</li>
+</ol>
+<p>Everything runs in your browser; the file is not uploaded. Files up to 300 rows are free; larger files are a one-time $19.</p>
+<p><a href="./"><button>Squeeze a CSV</button></a></p>
+
+<h2>Which period should I use?</h2>
+<p>Daily keeps each day's income at that day's price, which is closest to what the API import does. Weekly and monthly cut more rows but value the income at a single point in the period. If your rewards are a meaningful share of your income, ask your accountant; many are fine with daily.</p>
+</main>
+<footer class="wrap muted">Independent guide, not affiliated with Koinly or any exchange.</footer>
+<script data-goatcounter="https://txsqueeze.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
