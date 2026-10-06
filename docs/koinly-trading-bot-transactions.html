@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Koinly and trading bots: too many transactions from grid/DCA bot fills (KuCoin, Pionex, Binance)</title>
+<meta name="description" content="Grid and DCA bots create thousands of fills, and Koinly bills per transaction. Koinly's bulk aggregate only covers deposits. How to merge bot trades per day before importing, keeping the exchange's CSV format.">
+<link rel="canonical" href="https://swarm-t3.github.io/txsqueeze/koinly-trading-bot-transactions.html">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><div class="wrap"><a class="brand" href="./" style="text-decoration:none;color:inherit">Tx<span>Squeeze</span></a><nav><a href="./">Squeeze a CSV</a></nav></div></header>
+<main class="wrap">
+<h1>Koinly and trading bots: thousands of fills, one bill per fill</h1>
+<p class="muted">Updated October 2026. Not tax advice.</p>
+<p>A grid bot running for a few months can easily produce tens of thousands of fills. Koinly counts each one as a transaction and its plans stop at 10,000 (roughly $10 per extra 1,000 after that). Users on Koinly's forum and feedback board describe it plainly: 40,000 KuCoin bot records in four months (<a href="https://discuss.koinly.io/t/the-price-of-bot-transactions/21530">thread</a>), or "73000 micro transactions from my $100 experiments" and a $900 upgrade (<a href="https://feedback.koinly.io/feature-requests/p/aggregate-trading-bot-transactions">feature request, open since 2022</a>).</p>
+
+<h2>What Koinly can and can't do in the app</h2>
+<ul>
+<li><b>Bulk aggregate</b> works for <i>deposits</i> only (hourly or daily, one wallet and tag at a time). Bot fills are trades, so it doesn't apply. (<a href="https://support.koinly.io/en/articles/10441670-bulk-aggregate-deposit-transactions">Koinly article</a>)</li>
+<li><b>Manual merge</b> joins up to 9 same-day transactions at a time. Not realistic for thousands.</li>
+<li>Koinly aggregates some exchanges' own CSVs on import (it has done this for Binance), but not every export or bot product.</li>
+</ul>
+
+<h2>Merge the fills before you import</h2>
+<ol>
+<li>Export the bot's filled orders or trade history as CSV from the exchange.</li>
+<li>Open <a href="./">TxSqueeze</a> and drop the file in. For an exchange file, the page guesses column roles: pair/symbol, side and fee currency must match; amounts, volumes and fees are summed; prices are averaged; IDs and times keep the last value. Check the table and adjust if needed.</li>
+<li>Choose per day (default), week or month. Buys and sells stay separate because side is a keep-apart column.</li>
+<li>Download. The file keeps the exchange's header and column order, so import it into Koinly the same way as the original (remove the API connection or the original file for that wallet first).</li>
+</ol>
+<p>A synthetic test with a 3,600-fill ETH-USDT grid bot over 90 days gave 180 rows per day-and-side, which is the difference between Koinly's Trader plan and Hodler.</p>
+<p><a href="./"><button>Squeeze a bot CSV</button></a></p>
+
+<h2>Is daily merging accurate enough?</h2>
+<p>Summing a day's buys and a day's sells of the same pair keeps the day's total cost and proceeds; the gain is then computed on daily lots instead of per fill. Koinly support recommends merging per day/week/month for the same reason. Rules differ by country; ask your accountant if your bot's volume is material.</p>
+</main>
+<footer class="wrap muted">Independent guide, not affiliated with Koinly or any exchange.</footer>
+<script data-goatcounter="https://txsqueeze.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
